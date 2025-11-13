@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS donors (
   name TEXT NOT NULL,
   city TEXT, -- City name (e.g., "Los Angeles", "San Francisco")
   county TEXT, -- California county name (e.g., "Los Angeles", "San Diego")
+  latitude TEXT, -- Latitude coordinate
+  longitude TEXT, -- Longitude coordinate
   total_donated DECIMAL(10,2) DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

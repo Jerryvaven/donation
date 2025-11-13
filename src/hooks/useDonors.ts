@@ -7,6 +7,8 @@ export interface Donor {
   total_donated: number
   city?: string
   county?: string
+  latitude?: string
+  longitude?: string
   created_at: string
 }
 

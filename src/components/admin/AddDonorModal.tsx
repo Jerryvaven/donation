@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaUserPlus, FaTimes, FaHandshake, FaSync, FaCheckCircle } from 'react-icons/fa'
 import { createClient } from '@/lib/supabase-client'
@@ -20,10 +20,36 @@ export default function AddDonorModal({
   const [amount, setAmount] = useState('')
   const [city, setCity] = useState('')
   const [county, setCounty] = useState('')
+  const [latitude, setLatitude] = useState('')
+  const [longitude, setLongitude] = useState('')
   const [matched, setMatched] = useState(false)
   const [matchedAmount, setMatchedAmount] = useState('')
   const [saving, setSaving] = useState(false)
   const supabase = createClient()
+
+  const fetchCoordinates = async (city: string, county: string) => {
+    if (!city || !county) return;
+    try {
+      const response = await fetch('/api/geocode', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ city, county }),
+      });
+      const data = await response.json();
+      if (data.latitude && data.longitude) {
+        setLatitude(data.latitude);
+        setLongitude(data.longitude);
+      }
+    } catch (error) {
+      console.error('Error fetching coordinates:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCoordinates(city, county);
+  }, [city, county]);
 
   const handleAddDonor = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,7 +59,7 @@ export default function AddDonorModal({
       // Check if donor exists
       const { data: existingDonor } = await supabase
         .from('donors')
-        .select('id, total_donated, county, city')
+        .select('id, total_donated, county, city, latitude, longitude')
         .eq('name', donorName)
         .single()
 
@@ -56,6 +82,12 @@ export default function AddDonorModal({
         if (city && !existingDonor.city) {
           updateData.city = city
         }
+        if (latitude && !existingDonor.latitude) {
+          updateData.latitude = latitude
+        }
+        if (longitude && !existingDonor.longitude) {
+          updateData.longitude = longitude
+        }
         
         await supabase
           .from('donors')
@@ -69,7 +101,9 @@ export default function AddDonorModal({
             name: donorName, 
             total_donated: parseFloat(amount),
             county: county || null,
-            city: city || null
+            city: city || null,
+            latitude: latitude || null,
+            longitude: longitude || null
           }])
           .select('id')
           .single()
@@ -97,6 +131,8 @@ export default function AddDonorModal({
       setAmount('')
       setCity('')
       setCounty('')
+      setLatitude('')
+      setLongitude('')
       setMatched(false)
       setMatchedAmount('')
       setShowAddDonorModal(false)
