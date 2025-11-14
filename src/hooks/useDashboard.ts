@@ -29,6 +29,7 @@ interface RecentDonor {
   county: string
   date: string
   status: 'MATCHED' | 'PENDING'
+  matched_amount?: number
 }
 
 interface ActivityItem {
@@ -76,6 +77,7 @@ export function useDashboard() {
   const [loading, setLoading] = useState(true)
   const [showAddDonorModal, setShowAddDonorModal] = useState(false)
   const [showAccessDeniedModal, setShowAccessDeniedModal] = useState(false)
+  const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null)
   const [showNotifications, setShowNotifications] = useState(false)
   const [unreadNotifications, setUnreadNotifications] = useState(true)
   const [lastNotificationCheck, setLastNotificationCheck] = useState<string>('')
@@ -288,9 +290,9 @@ export function useDashboard() {
       // Get recent donations
       const { data: donations, error: donationsError } = await supabase
         .from('donations')
-        .select('id, amount, donation_date, matched, donor_id')
+        .select('id, amount, donation_date, matched, matched_amount, donor_id')
         .order('donation_date', { ascending: false })
-        .limit(20)
+        .limit(50)
 
       if (donationsError) {
         console.error('Error fetching donations:', donationsError)
@@ -342,7 +344,8 @@ export function useDashboard() {
           city: city,
           county: county,
           date: d.donation_date,
-          status: d.matched ? 'MATCHED' : 'PENDING'
+          status: d.matched ? 'MATCHED' : 'PENDING',
+          matched_amount: d.matched_amount ? parseFloat(d.matched_amount) : undefined
         }
       })
 
@@ -497,7 +500,8 @@ export function useDashboard() {
       if (fetchError) throw fetchError
 
       if (!pendingDonations || pendingDonations.length === 0) {
-        alert('No pending donations to match.')
+        setMessage({ type: 'info', text: 'No pending donations to match.' })
+        setTimeout(() => setMessage(null), 3000)
         return
       }
 
@@ -520,14 +524,16 @@ export function useDashboard() {
         throw errors[0].error
       }
 
-      alert(`Successfully matched ${pendingDonations.length} pending donations!`)
+      setMessage({ type: 'success', text: `Successfully matched ${pendingDonations.length} pending donations!` })
+      setTimeout(() => setMessage(null), 5000)
 
       // Refresh stats, donors table, and activity
       fetchDashboardStats()
       fetchRecentDonors()
       fetchRecentActivity()
     } catch (error: any) {
-      alert('Error performing quick match: ' + error.message)
+      setMessage({ type: 'error', text: 'Error performing quick match: ' + error.message })
+      setTimeout(() => setMessage(null), 5000)
     }
   }
 
@@ -541,7 +547,8 @@ export function useDashboard() {
       if (donorsError) throw donorsError
 
       if (!donors || donors.length === 0) {
-        alert('No donors to export.')
+        setMessage({ type: 'info', text: 'No donors to export.' })
+        setTimeout(() => setMessage(null), 3000)
         return
       }
 
@@ -576,9 +583,11 @@ export function useDashboard() {
       link.click()
       document.body.removeChild(link)
 
-      alert('Donors data exported successfully!')
+      setMessage({ type: 'success', text: 'Donors data exported successfully!' })
+      setTimeout(() => setMessage(null), 3000)
     } catch (error: any) {
-      alert('Error exporting data: ' + error.message)
+      setMessage({ type: 'error', text: 'Error exporting data: ' + error.message })
+      setTimeout(() => setMessage(null), 5000)
     }
   }
 
@@ -598,7 +607,8 @@ export function useDashboard() {
         const lines = text.split('\n').filter(line => line.trim())
 
         if (lines.length < 2) {
-          alert('CSV file must have at least a header row and one data row.')
+          setMessage({ type: 'error', text: 'CSV file must have at least a header row and one data row.' })
+          setTimeout(() => setMessage(null), 5000)
           return
         }
 
@@ -612,7 +622,8 @@ export function useDashboard() {
         )
 
         if (!hasExpectedHeaders) {
-          alert('CSV must have columns: Donor Name, Total Donated, City, County')
+          setMessage({ type: 'error', text: 'CSV must have columns: Donor Name, Total Donated, City, County' })
+          setTimeout(() => setMessage(null), 5000)
           return
         }
 
@@ -668,7 +679,8 @@ export function useDashboard() {
           }
         }
 
-        alert(`Import completed! ${successCount} donors imported successfully. ${errorCount} errors.`)
+        setMessage({ type: 'success', text: `Import completed! ${successCount} donors imported successfully. ${errorCount > 0 ? errorCount + ' errors.' : ''}` })
+        setTimeout(() => setMessage(null), 5000)
 
         // Refresh data
         fetchDashboardStats()
@@ -676,7 +688,8 @@ export function useDashboard() {
         fetchRecentActivity()
         fetchMonthlyData()
       } catch (error: any) {
-        alert('Error reading file: ' + error.message)
+        setMessage({ type: 'error', text: 'Error reading file: ' + error.message })
+        setTimeout(() => setMessage(null), 5000)
       }
     }
 
@@ -697,7 +710,8 @@ export function useDashboard() {
         .select('name, total_donated, county, city, created_at')
 
       if (!donations || !donors) {
-        alert('No data available for report.')
+        setMessage({ type: 'info', text: 'No data available for report.' })
+        setTimeout(() => setMessage(null), 3000)
         return
       }
 
@@ -758,9 +772,11 @@ RECENT ACTIVITY (Last 30 days):
       link.click()
       document.body.removeChild(link)
 
-      alert('Report generated successfully!')
+      setMessage({ type: 'success', text: 'Report generated successfully!' })
+      setTimeout(() => setMessage(null), 3000)
     } catch (error: any) {
-      alert('Error generating report: ' + error.message)
+      setMessage({ type: 'error', text: 'Error generating report: ' + error.message })
+      setTimeout(() => setMessage(null), 5000)
     }
   }
 
@@ -784,6 +800,8 @@ RECENT ACTIVITY (Last 30 days):
     setShowAddDonorModal,
     showAccessDeniedModal,
     setShowAccessDeniedModal,
+    message,
+    setMessage,
     showNotifications,
     setShowNotifications,
     unreadNotifications,

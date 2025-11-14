@@ -7,6 +7,8 @@ import {
   FaEnvelope,
   FaLock,
   FaExclamationTriangle,
+  FaEye,
+  FaEyeSlash,
 } from "react-icons/fa";
 import { createClient } from "@/lib/supabase-client";
 import { useRouter } from "next/navigation";
@@ -16,6 +18,7 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
@@ -103,9 +106,9 @@ export default function AdminLogin() {
               >
                 Email Address
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaEnvelope className="text-gray-400" />
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <FaEnvelope className="text-gray-400 group-focus-within:text-black transition-colors duration-200" />
                 </div>
                 <motion.input
                   whileFocus={{ scale: 1.02 }}
@@ -128,17 +131,24 @@ export default function AdminLogin() {
               >
                 Password
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="text-gray-400" />
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <FaLock className="text-gray-400 group-focus-within:text-black transition-colors duration-200" />
+                </div>
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer z-10" onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? (
+                    <FaEyeSlash className="text-gray-400 group-focus-within:text-black transition-colors duration-200" />
+                  ) : (
+                    <FaEye className="text-gray-400 group-focus-within:text-black transition-colors duration-200" />
+                  )}
                 </div>
                 <motion.input
                   whileFocus={{ scale: 1.02 }}
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
-                  className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200"
+                  className="appearance-none block w-full pl-10 pr-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200"
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

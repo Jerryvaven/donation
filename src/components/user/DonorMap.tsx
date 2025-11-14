@@ -106,7 +106,7 @@ export default function DonorMap({ donors }: DonorMapProps) {
                         : `${groupDonors.length} donors at this location`}
                     </div>
                     {groupDonors.map((donor, index) => (
-                      <div key={donor.id} className="mb-1 last:mb-0">
+                      <div key={`donor-${donor.id}-${index}`} className="mb-1 last:mb-0">
                         <div className="font-medium">{donor.name}</div>
                         <div className="text-green-600">
                           Total: ${donor.total_donated.toFixed(2)}

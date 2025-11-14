@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaSearch, FaSync } from 'react-icons/fa'
+import { FaSearch, FaSync, FaEye, FaEdit, FaTrash, FaCheckCircle, FaTimes } from 'react-icons/fa'
 import { createClient } from '@/lib/supabase-client'
+import DeleteConfirmModal from './DeleteConfirmModal'
 
 interface RecentDonor {
   id: string
@@ -14,16 +15,25 @@ interface RecentDonor {
   county: string
   date: string
   status: 'MATCHED' | 'PENDING'
+  matched_amount?: number
 }
 
 interface RecentDonorsProps {
   recentDonors: RecentDonor[]
   loading: boolean
   onDataRefresh: () => void
+  onViewDonation?: (donation: RecentDonor) => void
+  onEditDonation?: (donation: RecentDonor) => void
 }
 
-export default function RecentDonors({ recentDonors, loading, onDataRefresh }: RecentDonorsProps) {
+export default function RecentDonors({ recentDonors, loading, onDataRefresh, onViewDonation, onEditDonation }: RecentDonorsProps) {
   const [searchQuery, setSearchQuery] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [donationToDelete, setDonationToDelete] = useState<RecentDonor | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const itemsPerPage = 5
   const supabase = createClient()
 
   const handleMatchDonation = async (donationId: string, amount: number) => {
@@ -39,12 +49,49 @@ export default function RecentDonors({ recentDonors, loading, onDataRefresh }: R
 
       if (error) throw error
 
-      alert('Donation matched successfully!')
+      setMessage({ type: 'success', text: 'Donation matched successfully!' })
       
       // Refresh data
       onDataRefresh()
+      
+      // Clear message after 3 seconds
+      setTimeout(() => setMessage(null), 3000)
     } catch (error: any) {
-      alert('Error matching donation: ' + error.message)
+      setMessage({ type: 'error', text: 'Error matching donation: ' + error.message })
+      setTimeout(() => setMessage(null), 5000)
+    }
+  }
+
+  const handleDeleteClick = (donation: RecentDonor) => {
+    setDonationToDelete(donation)
+    setShowDeleteModal(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!donationToDelete) return
+
+    setIsDeleting(true)
+    try {
+      const response = await fetch(`/api/donations/${donationToDelete.id}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) throw new Error('Failed to delete donation')
+
+      setMessage({ type: 'success', text: 'Donation deleted successfully!' })
+      setShowDeleteModal(false)
+      setDonationToDelete(null)
+      
+      // Refresh data
+      onDataRefresh()
+      
+      // Clear message after 3 seconds
+      setTimeout(() => setMessage(null), 3000)
+    } catch (error: any) {
+      setMessage({ type: 'error', text: 'Error deleting donation: ' + error.message })
+      setTimeout(() => setMessage(null), 5000)
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -72,6 +119,35 @@ export default function RecentDonors({ recentDonors, loading, onDataRefresh }: R
         </div>
       </div>
 
+      {/* Message Toast */}
+      <AnimatePresence>
+        {message && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className={`mb-4 p-4 rounded-lg flex items-center gap-3 ${
+              message.type === 'success'
+                ? 'bg-green-50 border border-green-200'
+                : 'bg-red-50 border border-red-200'
+            }`}
+          >
+            {message.type === 'success' ? (
+              <FaCheckCircle className="text-green-600 text-xl flex-shrink-0" />
+            ) : (
+              <FaTimes className="text-red-600 text-xl flex-shrink-0" />
+            )}
+            <p
+              className={`text-sm font-medium ${
+                message.type === 'success' ? 'text-green-800' : 'text-red-800'
+              }`}
+            >
+              {message.text}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {loading ? (
         <div className="text-gray-600 text-center py-12 flex items-center justify-center gap-3">
           <FaSync className="animate-spin text-black text-xl" />
@@ -92,6 +168,7 @@ export default function RecentDonors({ recentDonors, loading, onDataRefresh }: R
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase">Location</th>
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase">Date</th>
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase">Status</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -103,6 +180,7 @@ export default function RecentDonors({ recentDonors, loading, onDataRefresh }: R
                       donor.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
                       donor.county.toLowerCase().includes(searchQuery.toLowerCase())
                     )
+                    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                     .map((donor, index) => (
                       <motion.tr
                         key={donor.id}
@@ -146,7 +224,7 @@ export default function RecentDonors({ recentDonors, loading, onDataRefresh }: R
                             year: 'numeric'
                           })}
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="py-4 px-4 text-center">
                           <div className="flex items-center gap-2">
                             <motion.span
                               whileHover={{ scale: 1.05 }}
@@ -170,6 +248,37 @@ export default function RecentDonors({ recentDonors, loading, onDataRefresh }: R
                             )}
                           </div>
                         </td>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center gap-2">
+                            <motion.button
+                              onClick={() => onViewDonation?.(donor)}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              className="p-2 text-gray-400 hover:text-blue-600 transition-colors duration-200"
+                              title="View"
+                            >
+                              <FaEye />
+                            </motion.button>
+                            <motion.button
+                              onClick={() => onEditDonation?.(donor)}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              className="p-2 text-gray-400 hover:text-yellow-600 transition-colors duration-200"
+                              title="Edit"
+                            >
+                              <FaEdit />
+                            </motion.button>
+                            <motion.button
+                              onClick={() => handleDeleteClick(donor)}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              className="p-2 text-gray-400 hover:text-red-600 transition-colors duration-200"
+                              title="Delete"
+                            >
+                              <FaTrash />
+                            </motion.button>
+                          </div>
+                        </td>
                       </motion.tr>
                     ))}
                 </AnimatePresence>
@@ -178,41 +287,85 @@ export default function RecentDonors({ recentDonors, loading, onDataRefresh }: R
           </div>
 
           {/* Pagination */}
-          <div className="flex justify-between items-center mt-6">
-            <div className="text-sm text-gray-500">
-              Showing {recentDonors.filter(donor =>
-                searchQuery === '' ||
-                donor.donorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                donor.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                donor.county.toLowerCase().includes(searchQuery.toLowerCase())
-              ).length} of {recentDonors.length} results
-            </div>
-            <div className="flex gap-1">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-3 py-1 rounded bg-gray-100 text-gray-600 text-sm hover:bg-gray-200 transition-colors"
-              >
-                Previous
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-3 py-1 rounded bg-black text-white text-sm font-semibold"
-              >
-                1
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-3 py-1 rounded bg-gray-100 text-gray-600 text-sm hover:bg-gray-200 transition-colors"
-              >
-                Next
-              </motion.button>
-            </div>
-          </div>
+          {(() => {
+            const filteredDonors = recentDonors.filter(donor =>
+              searchQuery === '' ||
+              donor.donorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              donor.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              donor.county.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            const totalPages = Math.ceil(filteredDonors.length / itemsPerPage)
+            const startIndex = (currentPage - 1) * itemsPerPage + 1
+            const endIndex = Math.min(currentPage * itemsPerPage, filteredDonors.length)
+
+            return (
+              <div className="flex justify-between items-center mt-6">
+                <div className="text-sm text-gray-500">
+                  Showing {filteredDonors.length > 0 ? startIndex : 0}-{endIndex} of {filteredDonors.length} results
+                </div>
+                {totalPages > 1 && (
+                  <div className="flex gap-1">
+                    <motion.button
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                      whileHover={currentPage !== 1 ? { scale: 1.05 } : {}}
+                      whileTap={currentPage !== 1 ? { scale: 0.95 } : {}}
+                      className={`px-3 py-1 rounded text-sm transition-colors ${
+                        currentPage === 1
+                          ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      Previous
+                    </motion.button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                      <motion.button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`px-3 py-1 rounded text-sm font-semibold transition-colors ${
+                          currentPage === page
+                            ? 'bg-black text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        {page}
+                      </motion.button>
+                    ))}
+                    <motion.button
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages}
+                      whileHover={currentPage !== totalPages ? { scale: 1.05 } : {}}
+                      whileTap={currentPage !== totalPages ? { scale: 0.95 } : {}}
+                      className={`px-3 py-1 rounded text-sm transition-colors ${
+                        currentPage === totalPages
+                          ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      Next
+                    </motion.button>
+                  </div>
+                )}
+              </div>
+            )
+          })()}
         </>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false)
+          setDonationToDelete(null)
+        }}
+        onConfirm={handleDeleteConfirm}
+        donorName={donationToDelete?.donorName}
+        amount={donationToDelete?.amount}
+        isDeleting={isDeleting}
+      />
     </motion.div>
   )
 }
