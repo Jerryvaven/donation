@@ -23,6 +23,7 @@ interface AddDonorModalProps {
   onDataRefresh: () => void
   mode?: 'add' | 'edit' | 'view'
   donation?: RecentDonor | null
+  darkMode?: boolean
 }
 
 export default function AddDonorModal({
@@ -30,7 +31,8 @@ export default function AddDonorModal({
   setShowAddDonorModal,
   onDataRefresh,
   mode = 'add',
-  donation = null
+  donation = null,
+  darkMode = false
 }: AddDonorModalProps) {
   const [donorName, setDonorName] = useState('')
   const [amount, setAmount] = useState('')
@@ -262,18 +264,18 @@ export default function AddDonorModal({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl"
+            className={`${darkMode ? 'bg-[#1E1E1E]' : 'bg-white'} rounded-2xl max-w-md w-full p-8 shadow-2xl`}
           >
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-3">
                 <motion.div
-                  className="p-2 bg-black rounded-lg"
+                  className={`p-2 ${darkMode ? 'bg-[#3B82F6]' : 'bg-black'} rounded-lg`}
                   whileHover={{ rotate: 360 }}
                   transition={{ duration: 0.6 }}
                 >
                   <FaUserPlus className="text-xl text-white" />
                 </motion.div>
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   {mode === 'add' ? 'Add New Donation' : mode === 'edit' ? 'Edit Donation' : 'View Donation'}
                 </h2>
               </div>
@@ -281,7 +283,7 @@ export default function AddDonorModal({
                 onClick={() => setShowAddDonorModal(false)}
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
-                className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-2 transition-all"
+                className={`${darkMode ? 'text-[#808080] hover:text-white hover:bg-[#242424]' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'} rounded-lg p-2 transition-all`}
               >
                 <FaTimes className="text-xl" />
               </motion.button>
@@ -296,8 +298,8 @@ export default function AddDonorModal({
                   exit={{ opacity: 0, y: -10 }}
                   className={`mb-4 p-4 rounded-lg flex items-center gap-3 ${
                     message.type === 'success'
-                      ? 'bg-green-50 border border-green-200'
-                      : 'bg-red-50 border border-red-200'
+                      ? darkMode ? 'bg-[#22C55E]/20 border border-[#22C55E]/30' : 'bg-green-50 border border-green-200'
+                      : darkMode ? 'bg-[#EF4444]/20 border border-[#EF4444]/30' : 'bg-red-50 border border-red-200'
                   }`}
                 >
                   {message.type === 'success' ? (
@@ -307,7 +309,9 @@ export default function AddDonorModal({
                   )}
                   <p
                     className={`text-sm font-medium ${
-                      message.type === 'success' ? 'text-green-800' : 'text-red-800'
+                      message.type === 'success' 
+                        ? darkMode ? 'text-[#22C55E]' : 'text-green-800' 
+                        : darkMode ? 'text-[#EF4444]' : 'text-red-800'
                     }`}
                   >
                     {message.text}
@@ -318,7 +322,7 @@ export default function AddDonorModal({
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="donorName" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="donorName" className={`block text-sm font-semibold ${darkMode ? 'text-[#B3B3B3]' : 'text-gray-700'} mb-2`}>
                   Donor Name *
                 </label>
                 <input
@@ -328,13 +332,13 @@ export default function AddDonorModal({
                   onChange={(e) => setDonorName(e.target.value)}
                   required
                   readOnly={mode === 'view'}
-                  className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-black focus:border-black transition-all outline-none"
+                  className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#242424] border-[#333333] text-white' : 'bg-white border-gray-300 text-gray-900'} border rounded-lg focus:ring-2 ${darkMode ? 'focus:ring-[#3B82F6] focus:border-[#3B82F6]' : 'focus:ring-black focus:border-black'} transition-all outline-none`}
                   placeholder="Enter donor name"
                 />
               </div>
 
               <div>
-                <label htmlFor="amount" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="amount" className={`block text-sm font-semibold ${darkMode ? 'text-[#B3B3B3]' : 'text-gray-700'} mb-2`}>
                   Donation Amount ($) *
                 </label>
                 <input
@@ -345,13 +349,13 @@ export default function AddDonorModal({
                   onChange={(e) => setAmount(e.target.value)}
                   required
                   readOnly={mode === 'view'}
-                  className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-black focus:border-black transition-all outline-none"
+                  className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#242424] border-[#333333] text-white' : 'bg-white border-gray-300 text-gray-900'} border rounded-lg focus:ring-2 ${darkMode ? 'focus:ring-[#3B82F6] focus:border-[#3B82F6]' : 'focus:ring-black focus:border-black'} transition-all outline-none`}
                   placeholder="0.00"
                 />
               </div>
 
               <div>
-                <label htmlFor="city" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="city" className={`block text-sm font-semibold ${darkMode ? 'text-[#B3B3B3]' : 'text-gray-700'} mb-2`}>
                   City
                 </label>
                 <input
@@ -360,13 +364,13 @@ export default function AddDonorModal({
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   readOnly={mode === 'view'}
-                  className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-black focus:border-black transition-all outline-none"
+                  className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#242424] border-[#333333] text-white' : 'bg-white border-gray-300 text-gray-900'} border rounded-lg focus:ring-2 ${darkMode ? 'focus:ring-[#3B82F6] focus:border-[#3B82F6]' : 'focus:ring-black focus:border-black'} transition-all outline-none`}
                   placeholder="Enter city (optional)"
                 />
               </div>
 
               <div>
-                <label htmlFor="county" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="county" className={`block text-sm font-semibold ${darkMode ? 'text-[#B3B3B3]' : 'text-gray-700'} mb-2`}>
                   County
                 </label>
                 <input
@@ -375,12 +379,12 @@ export default function AddDonorModal({
                   value={county}
                   onChange={(e) => setCounty(e.target.value)}
                   readOnly={mode === 'view'}
-                  className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-black focus:border-black transition-all outline-none"
+                  className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#242424] border-[#333333] text-white' : 'bg-white border-gray-300 text-gray-900'} border rounded-lg focus:ring-2 ${darkMode ? 'focus:ring-[#3B82F6] focus:border-[#3B82F6]' : 'focus:ring-black focus:border-black'} transition-all outline-none`}
                   placeholder="Enter county (optional)"
                 />
               </div>
 
-              <div className="flex items-center gap-3 py-3 px-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-all">
+              <div className={`flex items-center gap-3 py-3 px-4 ${darkMode ? 'bg-[#242424] border-[#333333] hover:bg-[#2A2A2A]' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'} rounded-lg border transition-all`}>
                 <input
                   type="checkbox"
                   id="matched"
@@ -392,10 +396,10 @@ export default function AddDonorModal({
                     }
                   }}
                   disabled={mode === 'view'}
-                  className="w-5 h-5 text-black bg-white border-gray-300 rounded focus:ring-black focus:ring-2 cursor-pointer disabled:cursor-not-allowed"
+                  className={`w-5 h-5 ${darkMode ? 'text-[#3B82F6] bg-[#1E1E1E] border-[#333333] focus:ring-[#3B82F6]' : 'text-black bg-white border-gray-300 focus:ring-black'} rounded focus:ring-2 cursor-pointer disabled:cursor-not-allowed`}
                 />
-                <label htmlFor="matched" className="text-sm text-gray-700 font-medium flex items-center gap-2 cursor-pointer">
-                  <FaHandshake className="text-gray-600" />
+                <label htmlFor="matched" className={`text-sm ${darkMode ? 'text-[#B3B3B3]' : 'text-gray-700'} font-medium flex items-center gap-2 cursor-pointer`}>
+                  <FaHandshake className={darkMode ? 'text-[#B3B3B3]' : 'text-gray-600'} />
                   This donation is matched
                 </label>
               </div>
@@ -406,7 +410,7 @@ export default function AddDonorModal({
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
                 >
-                  <label htmlFor="matchedAmount" className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label htmlFor="matchedAmount" className={`block text-sm font-semibold ${darkMode ? 'text-[#B3B3B3]' : 'text-gray-700'} mb-2`}>
                     Matched Amount ($) *
                   </label>
                   <input
@@ -417,7 +421,7 @@ export default function AddDonorModal({
                     onChange={(e) => setMatchedAmount(e.target.value)}
                     required
                     readOnly={mode === 'view'}
-                    className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-black focus:border-black transition-all outline-none"
+                    className={`w-full px-4 py-2.5 ${darkMode ? 'bg-[#242424] border-[#333333] text-white' : 'bg-white border-gray-300 text-gray-900'} border rounded-lg focus:ring-2 ${darkMode ? 'focus:ring-[#3B82F6] focus:border-[#3B82F6]' : 'focus:ring-black focus:border-black'} transition-all outline-none`}
                     placeholder="0.00"
                   />
                 </motion.div>
@@ -430,7 +434,7 @@ export default function AddDonorModal({
                     onClick={() => setShowAddDonorModal(false)}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex-1 px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-semibold transition-all duration-200"
+                    className={`flex-1 px-5 py-2.5 ${darkMode ? 'bg-[#242424] hover:bg-[#2A2A2A] text-[#B3B3B3]' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'} rounded-lg font-semibold transition-all duration-200`}
                   >
                     {mode === 'view' ? 'Close' : 'Cancel'}
                   </motion.button>
@@ -441,7 +445,7 @@ export default function AddDonorModal({
                     disabled={saving}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`${mode === 'edit' ? 'w-full' : 'flex-1'} px-5 py-2.5 bg-black hover:bg-gray-800 text-white rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
+                    className={`${mode === 'edit' ? 'w-full' : 'flex-1'} px-5 py-2.5 ${darkMode ? 'bg-[#3B82F6] hover:bg-[#2563EB]' : 'bg-black hover:bg-gray-800'} text-white rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
                   >
                     {saving ? (
                       <>

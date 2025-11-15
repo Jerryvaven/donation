@@ -10,29 +10,32 @@ interface MonthlyData {
 
 interface DonorTrendsProps {
   monthlyData: MonthlyData[]
+  darkMode: boolean
 }
 
-export default function DonorTrends({ monthlyData }: DonorTrendsProps) {
+export default function DonorTrends({ monthlyData, darkMode }: DonorTrendsProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.6 }}
-      className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-8"
+      className={`rounded-xl p-6 shadow-sm border mb-8 ${
+        darkMode ? 'bg-[#242424] border-[#333333]' : 'bg-white border-gray-100'
+      }`}
     >
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Donation Trends</h2>
-          <p className="text-sm text-gray-500">Monthly overview of donations and matches</p>
+          <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Donation Trends</h2>
+          <p className={`text-sm ${darkMode ? 'text-[#B3B3B3]' : 'text-gray-500'}`}>Monthly overview of donations and matches</p>
         </div>
         <div className="flex gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-black rounded"></div>
-            <span className="text-gray-600">donations {monthlyData.length > 0 ? `- $${monthlyData.reduce((sum, m) => sum + m.donations, 0).toFixed(0)}` : ''}</span>
+            <div className={`w-3 h-3 rounded ${darkMode ? 'bg-[#3B82F6]' : 'bg-black'}`}></div>
+            <span className={darkMode ? 'text-[#B3B3B3]' : 'text-gray-600'}>donations {monthlyData.length > 0 ? `- $${monthlyData.reduce((sum, m) => sum + m.donations, 0).toFixed(0)}` : ''}</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-gray-300 rounded"></div>
-            <span className="text-gray-600">matched {monthlyData.length > 0 ? `- $${monthlyData.reduce((sum, m) => sum + m.matched, 0).toFixed(0)}` : ''}</span>
+            <div className={`w-3 h-3 rounded ${darkMode ? 'bg-[#808080]' : 'bg-gray-300'}`}></div>
+            <span className={darkMode ? 'text-[#B3B3B3]' : 'text-gray-600'}>matched {monthlyData.length > 0 ? `- $${monthlyData.reduce((sum, m) => sum + m.matched, 0).toFixed(0)}` : ''}</span>
           </div>
         </div>
       </div>
@@ -59,11 +62,15 @@ export default function DonorTrends({ monthlyData }: DonorTrendsProps) {
                   initial={{ height: 0 }}
                   animate={{ height: donationHeight }}
                   transition={{ duration: 0.8, delay: 0.7 + index * 0.05 }}
-                  className="flex-1 bg-black rounded-t cursor-pointer relative group"
+                  className={`flex-1 rounded-t cursor-pointer relative group ${
+                    darkMode ? 'bg-[#3B82F6]' : 'bg-black'
+                  }`}
                 >
                   {data.donations > 0 && (
                     <div
-                      className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10"
+                      className={`absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 ${
+                        darkMode ? 'bg-[#1E1E1E] text-white' : 'bg-gray-900 text-white'
+                      }`}
                     >
                       ${data.donations.toFixed(0)}
                     </div>
@@ -73,18 +80,22 @@ export default function DonorTrends({ monthlyData }: DonorTrendsProps) {
                   initial={{ height: 0 }}
                   animate={{ height: matchedHeight }}
                   transition={{ duration: 0.8, delay: 0.7 + index * 0.05 }}
-                  className="flex-1 bg-gray-300 rounded-t cursor-pointer relative group"
+                  className={`flex-1 rounded-t cursor-pointer relative group ${
+                    darkMode ? 'bg-[#808080]' : 'bg-gray-300'
+                  }`}
                 >
                   {data.matched > 0 && (
                     <div
-                      className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10"
+                      className={`absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 ${
+                        darkMode ? 'bg-[#1E1E1E] text-white' : 'bg-gray-700 text-white'
+                      }`}
                     >
                       ${data.matched.toFixed(0)}
                     </div>
                   )}
                 </motion.div>
               </div>
-              <span className="text-xs text-gray-500 mt-2">{data.month}</span>
+              <span className={`text-xs mt-2 ${darkMode ? 'text-[#808080]' : 'text-gray-500'}`}>{data.month}</span>
             </div>
           )
         })}

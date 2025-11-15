@@ -6,11 +6,13 @@ import { FaTimes } from 'react-icons/fa'
 interface AccessDeniedModalProps {
   showAccessDeniedModal: boolean
   setShowAccessDeniedModal: (show: boolean) => void
+  darkMode?: boolean
 }
 
 export default function AccessDeniedModal({
   showAccessDeniedModal,
-  setShowAccessDeniedModal
+  setShowAccessDeniedModal,
+  darkMode = false
 }: AccessDeniedModalProps) {
   return (
     <AnimatePresence>
@@ -25,13 +27,21 @@ export default function AccessDeniedModal({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+            className={`rounded-lg p-6 max-w-md w-full mx-4 ${
+              darkMode ? 'bg-[#1E1E1E]' : 'bg-white'
+            }`}
           >
             <div className="flex items-center mb-4">
-              <FaTimes className="text-red-500 text-xl mr-2" />
-              <h3 className="text-lg font-semibold text-gray-900">Access Denied</h3>
+              <FaTimes className={`text-xl mr-2 ${
+                darkMode ? 'text-[#EF4444]' : 'text-red-500'
+              }`} />
+              <h3 className={`text-lg font-semibold ${
+                darkMode ? 'text-white' : 'text-gray-900'
+              }`}>Access Denied</h3>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className={`mb-6 ${
+              darkMode ? 'text-[#B3B3B3]' : 'text-gray-600'
+            }`}>
               You do not have admin privileges to access this dashboard. Admin role is required.
             </p>
             <div className="flex justify-end">
@@ -39,7 +49,9 @@ export default function AccessDeniedModal({
                 onClick={() => setShowAccessDeniedModal(false)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                className={`px-4 py-2 text-white rounded transition-colors ${
+                  darkMode ? 'bg-[#EF4444] hover:bg-[#DC2626]' : 'bg-red-500 hover:bg-red-600'
+                }`}
               >
                 OK
               </motion.button>

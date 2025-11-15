@@ -8,6 +8,7 @@ import EmptyState from './EmptyState'
 import LeaderboardControls from './LeaderboardControls'
 import DonorListItem from './DonorListItem'
 import DonorMap from './DonorMap'
+import { FaMoon, FaSun } from 'react-icons/fa'
 
 export default function Leaderboard() {
   const { donors, loading, error } = useDonors()
@@ -25,12 +26,24 @@ export default function Leaderboard() {
 
   const [viewMode, setViewMode] = useState<'both' | 'list' | 'map'>('both')
   const [currentPage, setCurrentPage] = useState(1)
+  const [darkMode, setDarkMode] = useState(true)
   const itemsPerPage = 6
 
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1)
   }, [filteredAndSortedDonors.length])
+
+  // Apply dark mode to the entire page
+  useEffect(() => {
+    if (darkMode) {
+      document.body.style.backgroundColor = '#121212'
+      document.documentElement.style.backgroundColor = '#121212'
+    } else {
+      document.body.style.backgroundColor = ''
+      document.documentElement.style.backgroundColor = ''
+    }
+  }, [darkMode])
 
   // Pagination calculations
   const totalItems = filteredAndSortedDonors.length
@@ -55,26 +68,26 @@ export default function Leaderboard() {
   }
 
   const renderList = () => (
-    <div className="bg-white shadow overflow-hidden sm:rounded-md border">
-      <div className="px-6 py-4 bg-gray-50 border-b">
-        <h3 className="text-lg font-medium text-gray-900">
+    <div className={`shadow overflow-hidden sm:rounded-md border ${darkMode ? 'bg-[#242424] border-[#333333]' : 'bg-white border-gray-200'}`}>
+      <div className={`px-6 py-4 border-b ${darkMode ? 'bg-[#1E1E1E] border-[#333333]' : 'bg-gray-50 border-gray-200'}`}>
+        <h3 className={`text-lg font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
           Top Donors ({totalItems > 0 ? `${startIndex + 1}-${Math.min(endIndex, totalItems)} of ${totalItems}` : '0'})
         </h3>
       </div>
-      <ul className="divide-y divide-gray-200">
+      <ul className={`divide-y ${darkMode ? 'divide-[#333333]' : 'divide-gray-200'}`}>
         {paginatedDonors.map((donor, index) => (
-          <DonorListItem key={donor.id} donor={donor} index={startIndex + index} />
+          <DonorListItem key={donor.id} donor={donor} index={startIndex + index} darkMode={darkMode} />
         ))}
       </ul>
       {filteredAndSortedDonors.length === 0 && (
         <EmptyState message="No donors found matching your criteria." />
       )}
       {totalPages > 1 && (
-        <div className="px-6 py-4 bg-gray-50 border-t flex items-center justify-between">
+        <div className={`px-6 py-4 border-t flex items-center justify-between ${darkMode ? 'bg-[#1E1E1E] border-[#333333]' : 'bg-gray-50 border-gray-200'}`}>
           <button
             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed ${darkMode ? 'bg-[#242424] text-white border-[#333333] hover:bg-[#333333]' : 'bg-white text-black border-gray-300 hover:bg-gray-50'}`}
           >
             Previous
           </button>
@@ -85,8 +98,8 @@ export default function Leaderboard() {
                 onClick={() => setCurrentPage(page)}
                 className={`px-3 py-1 text-sm rounded-md ${
                   currentPage === page
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-white border border-gray-300 hover:bg-gray-50'
+                    ? (darkMode ? 'bg-[#3B82F6] text-white' : 'bg-black text-white')
+                    : (darkMode ? 'bg-[#242424] text-white border border-[#333333] hover:bg-[#333333]' : 'bg-white text-black border border-gray-300 hover:bg-gray-50')
                 }`}
               >
                 {page}
@@ -96,7 +109,7 @@ export default function Leaderboard() {
           <button
             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`px-3 py-1 text-sm border rounded-md disabled:opacity-50 disabled:cursor-not-allowed ${darkMode ? 'bg-[#242424] text-white border-[#333333] hover:bg-[#333333]' : 'bg-white text-black border-gray-300 hover:bg-gray-50'}`}
           >
             Next
           </button>
@@ -106,11 +119,28 @@ export default function Leaderboard() {
   )
 
   const renderMap = () => (
-    <DonorMap donors={filteredAndSortedDonors} />
+    <DonorMap donors={filteredAndSortedDonors} darkMode={darkMode} />
   )
 
   return (
-    <div className="space-y-6">
+    <div className={`min-h-screen transition-colors ${darkMode ? 'bg-[#121212]' : 'bg-gray-50'}`}>
+      {/* Header */}
+      <header className={`shadow ${darkMode ? 'bg-[#1E1E1E] border-b border-[#333333]' : 'bg-white'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
+          <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Donation Leaderboard</h1>
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className={`p-3 rounded-full shadow-lg transition-colors ${darkMode ? 'bg-[#242424] text-white hover:bg-[#333333]' : 'bg-black text-white hover:bg-gray-800'}`}
+            title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {darkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
+          </button>
+        </div>
+      </header>
+      
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 space-y-6">
+
       {/* Controls */}
       <LeaderboardControls
         searchTerm={searchTerm}
@@ -123,6 +153,7 @@ export default function Leaderboard() {
         handleSort={handleSort}
         viewMode={viewMode}
         setViewMode={setViewMode}
+        darkMode={darkMode}
       />
 
       {/* Content */}
@@ -136,6 +167,7 @@ export default function Leaderboard() {
       ) : (
         renderMap()
       )}
+      </main>
     </div>
   )
 }

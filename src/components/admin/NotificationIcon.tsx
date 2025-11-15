@@ -21,6 +21,7 @@ interface NotificationIconProps {
   setUnreadNotifications: (unread: boolean) => void
   lastNotificationCheck: string
   setLastNotificationCheck: (time: string) => void
+  darkMode?: boolean
 }
 
 export default function NotificationIcon({
@@ -30,7 +31,8 @@ export default function NotificationIcon({
   unreadNotifications,
   setUnreadNotifications,
   lastNotificationCheck,
-  setLastNotificationCheck
+  setLastNotificationCheck,
+  darkMode = false
 }: NotificationIconProps) {
   const notificationRef = useRef<HTMLDivElement>(null)
 
@@ -66,7 +68,9 @@ export default function NotificationIcon({
         }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="relative p-2.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+        className={`relative p-2.5 rounded-lg transition-colors ${
+          darkMode ? 'text-[#B3B3B3] hover:text-white hover:bg-[#242424]' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+        }`}
       >
         <FaBell className="text-lg" />
         {unreadNotifications && notificationActivity.length > 0 && (
@@ -86,11 +90,15 @@ export default function NotificationIcon({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50"
+            className={`absolute right-0 mt-2 w-80 rounded-xl shadow-xl border overflow-hidden z-50 ${
+              darkMode ? 'bg-[#1E1E1E] border-[#333333]' : 'bg-white border-gray-200'
+            }`}
           >
-            <div className="p-4 border-b border-gray-200 bg-gray-50">
+            <div className={`p-4 border-b ${
+              darkMode ? 'border-[#333333] bg-[#242424]' : 'border-gray-200 bg-gray-50'
+            }`}>
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-gray-900">Notifications</h3>
+                <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Notifications</h3>
                 {notificationActivity.length > 0 && (
                   <button
                     onClick={() => {
@@ -98,7 +106,9 @@ export default function NotificationIcon({
                       // For now, we'll just close the dropdown
                       setShowNotifications(false)
                     }}
-                    className="text-xs text-red-600 hover:text-red-700 font-medium hover:underline"
+                    className={`text-xs font-medium hover:underline ${
+                      darkMode ? 'text-[#EF4444] hover:text-[#DC2626]' : 'text-red-600 hover:text-red-700'
+                    }`}
                   >
                     Clear all
                   </button>
@@ -107,15 +117,17 @@ export default function NotificationIcon({
             </div>
             <div className="max-h-96 overflow-y-auto">
               {notificationActivity.length === 0 ? (
-                <div className="p-6 text-center text-gray-500 text-sm">
+                <div className={`p-6 text-center text-sm ${
+                  darkMode ? 'text-[#808080]' : 'text-gray-500'
+                }`}>
                   No notifications yet
                 </div>
               ) : (
-                <div className="divide-y divide-gray-100">
+                <div className={`divide-y ${darkMode ? 'divide-[#333333]' : 'divide-gray-100'}`}>
                   {notificationActivity.map((activity) => (
                     <motion.div
                       key={activity.id}
-                      whileHover={{ backgroundColor: '#f9fafb' }}
+                      whileHover={{ backgroundColor: darkMode ? '#242424' : '#f9fafb' }}
                       className="p-4 cursor-pointer transition-colors"
                     >
                       <div className="flex gap-3">
@@ -125,10 +137,12 @@ export default function NotificationIcon({
                           {activity.type === 'goal' && <span className="text-xl">🎯</span>}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-gray-900 font-medium leading-snug mb-1">
+                          <p className={`text-sm font-medium leading-snug mb-1 ${
+                            darkMode ? 'text-white' : 'text-gray-900'
+                          }`}>
                             {activity.message}
                           </p>
-                          <p className="text-xs text-gray-500">{activity.timestamp}</p>
+                          <p className={`text-xs ${darkMode ? 'text-[#808080]' : 'text-gray-500'}`}>{activity.timestamp}</p>
                         </div>
                       </div>
                     </motion.div>
@@ -137,8 +151,12 @@ export default function NotificationIcon({
               )}
             </div>
             {notificationActivity.length > 0 && (
-              <div className="p-3 border-t border-gray-200 bg-gray-50">
-                <button className="w-full text-center text-sm text-blue-600 hover:text-blue-700 font-medium">
+              <div className={`p-3 border-t ${
+                darkMode ? 'border-[#333333] bg-[#242424]' : 'border-gray-200 bg-gray-50'
+              }`}>
+                <button className={`w-full text-center text-sm font-medium ${
+                  darkMode ? 'text-[#3B82F6] hover:text-[#2563EB]' : 'text-blue-600 hover:text-blue-700'
+                }`}>
                   View all notifications
                 </button>
               </div>

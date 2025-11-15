@@ -25,9 +25,10 @@ const getDonorCoordinates = (donor: Donor): LatLngExpression | null => {
 
 interface DonorMapProps {
   donors: Donor[]
+  darkMode?: boolean
 }
 
-export default function DonorMap({ donors }: DonorMapProps) {
+export default function DonorMap({ donors, darkMode = false }: DonorMapProps) {
   const [isClient, setIsClient] = useState(false)
 
   // Fix for Leaflet icons in Next.js
@@ -48,12 +49,12 @@ export default function DonorMap({ donors }: DonorMapProps) {
 
   if (!isClient) {
     return (
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">
+      <div className={`p-6 rounded-lg shadow-sm border ${darkMode ? 'bg-[#242424] border-[#333333]' : 'bg-white border-gray-200'}`}>
+        <h3 className={`text-lg font-medium mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
           Donor Locations Map
         </h3>
-        <div className="h-96 w-full bg-gray-100 rounded-lg flex items-center justify-center">
-          <span className="text-gray-500">Loading map...</span>
+        <div className={`h-96 w-full rounded-lg flex items-center justify-center ${darkMode ? 'bg-[#1E1E1E]' : 'bg-gray-100'}`}>
+          <span className={darkMode ? 'text-[#B3B3B3]' : 'text-gray-500'}>Loading map...</span>
         </div>
       </div>
     )
@@ -76,8 +77,8 @@ export default function DonorMap({ donors }: DonorMapProps) {
   })
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border">
-      <h3 className="text-lg font-medium text-gray-900 mb-4">
+    <div className={`p-6 rounded-lg shadow-sm border ${darkMode ? 'bg-[#242424] border-[#333333]' : 'bg-white border-gray-200'}`}>
+      <h3 className={`text-lg font-medium mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
         Donor Locations Map
       </h3>
       <div className="h-96 w-full rounded-lg overflow-hidden">
@@ -121,7 +122,7 @@ export default function DonorMap({ donors }: DonorMapProps) {
           })}
         </MapContainer>
       </div>
-      <div className="mt-2 text-sm text-gray-500">
+      <div className={`mt-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-500'}`}>
         Showing {Object.keys(locationGroups).length} locations for {donorsWithLocation.length} donors with location data
       </div>
     </div>

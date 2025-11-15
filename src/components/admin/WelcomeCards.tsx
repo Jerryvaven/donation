@@ -26,11 +26,13 @@ interface DashboardStats {
 interface WelcomeCardsProps {
   stats: DashboardStats;
   formatCurrency: (amount: number) => string;
+  darkMode: boolean;
 }
 
 export default function WelcomeCards({
   stats,
   formatCurrency,
+  darkMode,
 }: WelcomeCardsProps) {
   return (
     <>
@@ -41,10 +43,10 @@ export default function WelcomeCards({
         transition={{ duration: 0.5, delay: 0.1 }}
         className="mb-8"
       >
-        <h2 className="text-2xl font-bold text-gray-900 mb-1">
+        <h2 className={`text-2xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
           Welcome back, Admin
         </h2>
-        <p className="text-gray-600">
+        <p className={darkMode ? 'text-[#B3B3B3]' : 'text-gray-600'}>
           Here's what's happening with your donations today.
         </p>
       </motion.div>
@@ -57,22 +59,24 @@ export default function WelcomeCards({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           whileHover={{ y: -5 }}
-          className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 group"
+          className={`rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border group ${
+            darkMode ? 'bg-[#242424] border-[#333333]' : 'bg-white border-gray-100'
+          }`}
         >
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
               <motion.div
-                className="p-3 bg-gray-50 rounded-lg"
+                className={`p-3 rounded-lg ${darkMode ? 'bg-[#1E1E1E]' : 'bg-gray-50'}`}
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <FaMoneyBillWave className="text-2xl text-gray-900 group-hover:text-green-500" />
+                <FaMoneyBillWave className={`text-2xl group-hover:text-green-500 ${darkMode ? 'text-white' : 'text-gray-900'}`} />
               </motion.div>
               <div>
-                <h3 className="text-sm font-medium text-gray-600">
+                <h3 className={`text-sm font-medium ${darkMode ? 'text-[#B3B3B3]' : 'text-gray-600'}`}>
                   Total Donations
                 </h3>
-                <p className="text-xs text-gray-400">from last month</p>
+                <p className={`text-xs ${darkMode ? 'text-[#808080]' : 'text-gray-400'}`}>from last month</p>
               </div>
             </div>
             <motion.div
@@ -85,7 +89,7 @@ export default function WelcomeCards({
             </motion.div>
           </div>
           <motion.div
-            className="text-3xl font-bold text-gray-900 mb-1"
+            className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
@@ -100,22 +104,24 @@ export default function WelcomeCards({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
           whileHover={{ y: -5 }}
-          className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 group"
+          className={`rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border group ${
+            darkMode ? 'bg-[#242424] border-[#333333]' : 'bg-white border-gray-100'
+          }`}
         >
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
               <motion.div
-                className="p-3 bg-gray-50 rounded-lg"
+                className={`p-3 rounded-lg ${darkMode ? 'bg-[#1E1E1E]' : 'bg-gray-50'}`}
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <FaUsers className="text-2xl text-gray-900 group-hover:text-blue-500" />
+                <FaUsers className={`text-2xl group-hover:text-blue-500 ${darkMode ? 'text-white' : 'text-gray-900'}`} />
               </motion.div>
               <div>
-                <h3 className="text-sm font-medium text-gray-600">
+                <h3 className={`text-sm font-medium ${darkMode ? 'text-[#B3B3B3]' : 'text-gray-600'}`}>
                   Total Donors
                 </h3>
-                <p className="text-xs text-gray-400">new this month</p>
+                <p className={`text-xs ${darkMode ? 'text-[#808080]' : 'text-gray-400'}`}>new this month</p>
               </div>
             </div>
             <motion.div
@@ -128,7 +134,7 @@ export default function WelcomeCards({
             </motion.div>
           </div>
           <motion.div
-            className="text-3xl font-bold text-gray-900 mb-1"
+            className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
@@ -143,22 +149,24 @@ export default function WelcomeCards({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
           whileHover={{ y: -5 }}
-          className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 group"
+          className={`rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border group ${
+            darkMode ? 'bg-[#242424] border-[#333333]' : 'bg-white border-gray-100'
+          }`}
         >
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
               <motion.div
-                className="p-3 bg-gray-50 rounded-lg"
+                className={`p-3 rounded-lg ${darkMode ? 'bg-[#1E1E1E]' : 'bg-gray-50'}`}
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <FaHandshake className="text-2xl text-gray-900 group-hover:text-purple-500" />
+                <FaHandshake className={`text-2xl group-hover:text-purple-500 ${darkMode ? 'text-white' : 'text-gray-900'}`} />
               </motion.div>
               <div>
-                <h3 className="text-sm font-medium text-gray-600">
+                <h3 className={`text-sm font-medium ${darkMode ? 'text-[#B3B3B3]' : 'text-gray-600'}`}>
                   Matched Funds
                 </h3>
-                <p className="text-xs text-gray-400">match rate</p>
+                <p className={`text-xs ${darkMode ? 'text-[#808080]' : 'text-gray-400'}`}>match rate</p>
               </div>
             </div>
             <motion.div
@@ -171,7 +179,7 @@ export default function WelcomeCards({
             </motion.div>
           </div>
           <motion.div
-            className="text-3xl font-bold text-gray-900 mb-1"
+            className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
@@ -186,22 +194,24 @@ export default function WelcomeCards({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
           whileHover={{ y: -5 }}
-          className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 group"
+          className={`rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border group ${
+            darkMode ? 'bg-[#242424] border-[#333333]' : 'bg-white border-gray-100'
+          }`}
         >
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
               <motion.div
-                className="p-3 bg-gray-50 rounded-lg"
+                className={`p-3 rounded-lg ${darkMode ? 'bg-[#1E1E1E]' : 'bg-gray-50'}`}
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <FaMapMarkerAlt className="text-2xl text-gray-900 group-hover:text-red-500" />
+                <FaMapMarkerAlt className={`text-2xl group-hover:text-red-500 ${darkMode ? 'text-white' : 'text-gray-900'}`} />
               </motion.div>
               <div>
-                <h3 className="text-sm font-medium text-gray-600">
+                <h3 className={`text-sm font-medium ${darkMode ? 'text-[#B3B3B3]' : 'text-gray-600'}`}>
                   Counties Reached
                 </h3>
-                <p className="text-xs text-gray-400">of California</p>
+                <p className={`text-xs ${darkMode ? 'text-[#808080]' : 'text-gray-400'}`}>of California</p>
               </div>
             </div>
             <motion.div
@@ -214,7 +224,7 @@ export default function WelcomeCards({
             </motion.div>
           </div>
           <motion.div
-            className="text-3xl font-bold text-gray-900 mb-1"
+            className={`text-3xl font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}

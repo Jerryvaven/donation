@@ -12,6 +12,7 @@ interface LeaderboardControlsProps {
   handleSort: (option: SortOption) => void
   viewMode: 'both' | 'list' | 'map'
   setViewMode: (mode: 'both' | 'list' | 'map') => void
+  darkMode: boolean
 }
 
 export default function LeaderboardControls({
@@ -24,14 +25,15 @@ export default function LeaderboardControls({
   counties,
   handleSort,
   viewMode,
-  setViewMode
+  setViewMode,
+  darkMode
 }: LeaderboardControlsProps) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border">
+    <div className={`p-6 rounded-lg shadow-sm border ${darkMode ? 'bg-[#242424] border-[#333333]' : 'bg-white border-gray-200'}`}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Search */}
         <div>
-          <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="search" className={`block text-sm font-medium mb-1 ${darkMode ? 'text-[#B3B3B3]' : 'text-gray-700'}`}>
             Search by name
           </label>
           <input
@@ -40,20 +42,20 @@ export default function LeaderboardControls({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Enter donor name..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${darkMode ? 'bg-[#1E1E1E] text-white border-[#333333] placeholder-[#808080] focus:ring-[#3B82F6] focus:border-[#3B82F6]' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'}`}
           />
         </div>
 
         {/* County Filter */}
         <div>
-          <label htmlFor="county" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="county" className={`block text-sm font-medium mb-1 ${darkMode ? 'text-[#B3B3B3]' : 'text-gray-700'}`}>
             Filter by county
           </label>
           <select
             id="county"
             value={selectedCounty}
             onChange={(e) => setSelectedCounty(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${darkMode ? 'bg-[#1E1E1E] text-white border-[#333333] focus:ring-[#3B82F6] focus:border-[#3B82F6]' : 'border-gray-300 focus:ring-indigo-500 focus:border-indigo-500'}`}
           >
             <option value="">All counties</option>
             {counties.map(county => (
@@ -64,7 +66,7 @@ export default function LeaderboardControls({
 
         {/* Sort Options */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-[#B3B3B3]' : 'text-gray-700'}`}>
             Sort by
           </label>
           <div className="flex items-center space-x-2">
@@ -72,8 +74,8 @@ export default function LeaderboardControls({
               onClick={() => handleSort('total_donated')}
               className={`px-3 py-2 text-sm rounded-md transition-colors ${
                 sortBy === 'total_donated'
-                  ? 'bg-black text-white'
-                  : 'bg-white text-black border border-black hover:bg-gray-100'
+                  ? (darkMode ? 'bg-[#3B82F6] text-white' : 'bg-black text-white')
+                  : (darkMode ? 'bg-[#242424] text-white border border-[#333333] hover:bg-[#333333]' : 'bg-white text-black border border-black hover:bg-gray-100')
               }`}
             >
               Amount {sortBy === 'total_donated' && (sortDirection === 'desc' ? '↓' : '↑')}
@@ -82,8 +84,8 @@ export default function LeaderboardControls({
               onClick={() => handleSort('name')}
               className={`px-3 py-2 text-sm rounded-md transition-colors ${
                 sortBy === 'name'
-                  ? 'bg-black text-white'
-                  : 'bg-white text-black border border-black hover:bg-gray-100'
+                  ? (darkMode ? 'bg-[#3B82F6] text-white' : 'bg-black text-white')
+                  : (darkMode ? 'bg-[#242424] text-white border border-[#333333] hover:bg-[#333333]' : 'bg-white text-black border border-black hover:bg-gray-100')
               }`}
             >
               Name {sortBy === 'name' && (sortDirection === 'desc' ? '↓' : '↑')}
@@ -93,8 +95,8 @@ export default function LeaderboardControls({
                 onClick={() => setViewMode('both')}
                 className={`p-2 text-sm rounded-md transition-colors ${
                   viewMode === 'both'
-                    ? 'bg-black text-white'
-                    : 'bg-white text-black border border-black hover:bg-gray-100'
+                    ? (darkMode ? 'bg-[#3B82F6] text-white' : 'bg-black text-white')
+                    : (darkMode ? 'bg-[#242424] text-white border border-[#333333] hover:bg-[#333333]' : 'bg-white text-black border border-black hover:bg-gray-100')
                 }`}
                 title="Show both list and map"
               >
@@ -104,8 +106,8 @@ export default function LeaderboardControls({
                 onClick={() => setViewMode('list')}
                 className={`p-2 text-sm rounded-md transition-colors ${
                   viewMode === 'list'
-                    ? 'bg-black text-white'
-                    : 'bg-white text-black border border-black hover:bg-gray-100'
+                    ? (darkMode ? 'bg-[#3B82F6] text-white' : 'bg-black text-white')
+                    : (darkMode ? 'bg-[#242424] text-white border border-[#333333] hover:bg-[#333333]' : 'bg-white text-black border border-black hover:bg-gray-100')
                 }`}
                 title="Show list only"
               >
@@ -115,8 +117,8 @@ export default function LeaderboardControls({
                 onClick={() => setViewMode('map')}
                 className={`p-2 text-sm rounded-md transition-colors ${
                   viewMode === 'map'
-                    ? 'bg-black text-white'
-                    : 'bg-white text-black border border-black hover:bg-gray-100'
+                    ? (darkMode ? 'bg-[#3B82F6] text-white' : 'bg-black text-white')
+                    : (darkMode ? 'bg-[#242424] text-white border border-[#333333] hover:bg-[#333333]' : 'bg-white text-black border border-black hover:bg-gray-100')
                 }`}
                 title="Show map only"
               >

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   FaUserPlus,
@@ -25,6 +25,7 @@ import { useDashboard } from '@/hooks/useDashboard'
 export default function AdminDashboard() {
   const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add')
   const [currentDonation, setCurrentDonation] = useState<any>(null)
+  const [darkMode, setDarkMode] = useState(true)
 
   const {
     // State
@@ -59,17 +60,28 @@ export default function AdminDashboard() {
     refreshData
   } = useDashboard()
 
+  // Apply dark mode to the entire page
+  useEffect(() => {
+    if (darkMode) {
+      document.body.style.backgroundColor = '#121212'
+      document.documentElement.style.backgroundColor = '#121212'
+    } else {
+      document.body.style.backgroundColor = ''
+      document.documentElement.style.backgroundColor = ''
+    }
+  }, [darkMode])
+
   if (!user) return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-gray-900 flex items-center gap-3">
-        <FaSync className="animate-spin text-black text-2xl" />
+    <div className={`min-h-screen flex items-center justify-center ${darkMode ? 'bg-[#121212]' : 'bg-gray-50'}`}>
+      <div className={`flex items-center gap-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+        <FaSync className={`animate-spin text-2xl ${darkMode ? 'text-[#3B82F6]' : 'text-black'}`} />
         <span className="text-lg">Loading...</span>
       </div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className={`min-h-screen ${darkMode ? 'bg-[#121212] text-white' : 'bg-gray-50 text-gray-900'}`}>
       <Navbar
         notificationActivity={notificationActivity}
         showNotifications={showNotifications}
@@ -78,12 +90,14 @@ export default function AdminDashboard() {
         setUnreadNotifications={setUnreadNotifications}
         lastNotificationCheck={lastNotificationCheck}
         setLastNotificationCheck={setLastNotificationCheck}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
       />
 
       <main className="max-w-7xl mx-auto px-6 py-8">
-        <WelcomeCards stats={stats} formatCurrency={formatCurrency} />
+        <WelcomeCards stats={stats} formatCurrency={formatCurrency} darkMode={darkMode} />
 
-        <DonorTrends monthlyData={monthlyData} />
+        <DonorTrends monthlyData={monthlyData} darkMode={darkMode} />
 
         {/* Message Toast */}
         <AnimatePresence>
@@ -94,26 +108,26 @@ export default function AdminDashboard() {
               exit={{ opacity: 0, y: -20 }}
               className={`mb-6 p-4 rounded-lg flex items-center gap-3 shadow-lg ${
                 message.type === 'success'
-                  ? 'bg-green-50 border border-green-200'
+                  ? (darkMode ? 'bg-[#22C55E]/20 border border-[#22C55E]/50' : 'bg-green-50 border border-green-200')
                   : message.type === 'error'
-                  ? 'bg-red-50 border border-red-200'
-                  : 'bg-blue-50 border border-blue-200'
+                  ? (darkMode ? 'bg-[#EF4444]/20 border border-[#EF4444]/50' : 'bg-red-50 border border-red-200')
+                  : (darkMode ? 'bg-[#3B82F6]/20 border border-[#3B82F6]/50' : 'bg-blue-50 border border-blue-200')
               }`}
             >
               {message.type === 'success' ? (
-                <FaCheckCircle className="text-green-600 text-xl flex-shrink-0" />
+                <FaCheckCircle className={`text-xl flex-shrink-0 ${darkMode ? 'text-[#22C55E]' : 'text-green-600'}`} />
               ) : message.type === 'error' ? (
-                <FaTimes className="text-red-600 text-xl flex-shrink-0" />
+                <FaTimes className={`text-xl flex-shrink-0 ${darkMode ? 'text-[#EF4444]' : 'text-red-600'}`} />
               ) : (
-                <FaInfoCircle className="text-blue-600 text-xl flex-shrink-0" />
+                <FaInfoCircle className={`text-xl flex-shrink-0 ${darkMode ? 'text-[#3B82F6]' : 'text-blue-600'}`} />
               )}
               <p
                 className={`text-sm font-medium ${
                   message.type === 'success'
-                    ? 'text-green-800'
+                    ? (darkMode ? 'text-[#22C55E]' : 'text-green-800')
                     : message.type === 'error'
-                    ? 'text-red-800'
-                    : 'text-blue-800'
+                    ? (darkMode ? 'text-[#EF4444]' : 'text-red-800')
+                    : (darkMode ? 'text-[#3B82F6]' : 'text-blue-800')
                 }`}
               >
                 {message.text}
@@ -137,7 +151,9 @@ export default function AdminDashboard() {
             }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-black hover:bg-gray-800 text-white px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 shadow-sm group"
+            className={`px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 shadow-sm group ${
+              darkMode ? 'bg-[#3B82F6] hover:bg-[#3B82F6]/80 text-white' : 'bg-black hover:bg-gray-800 text-white'
+            }`}
           >
             <motion.div className="group-hover:scale-110 transition-transform duration-200">
               <FaUserPlus />
@@ -148,7 +164,9 @@ export default function AdminDashboard() {
             onClick={handleQuickMatch}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-white hover:bg-gray-50 text-gray-700 px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 border border-gray-300 group"
+            className={`px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 border group ${
+              darkMode ? 'bg-[#242424] hover:bg-[#333333] text-white border-[#333333]' : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'
+            }`}
           >
             <motion.div className="group-hover:rotate-12 transition-transform duration-200">
               <HiSparkles />
@@ -159,7 +177,9 @@ export default function AdminDashboard() {
             onClick={handleExport}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-white hover:bg-gray-50 text-gray-700 px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 border border-gray-300 group"
+            className={`px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 border group ${
+              darkMode ? 'bg-[#242424] hover:bg-[#333333] text-white border-[#333333]' : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'
+            }`}
           >
             <motion.div className="group-hover:translate-x-1 transition-transform duration-200">
               <FaFileExport />
@@ -170,7 +190,9 @@ export default function AdminDashboard() {
             onClick={handleImport}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-white hover:bg-gray-50 text-gray-700 px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 border border-gray-300 group"
+            className={`px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 border group ${
+              darkMode ? 'bg-[#242424] hover:bg-[#333333] text-white border-[#333333]' : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'
+            }`}
           >
             <motion.div className="group-hover:-translate-y-1 transition-transform duration-200">
               <FaFileUpload />
@@ -181,7 +203,9 @@ export default function AdminDashboard() {
             onClick={handleReport}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-white hover:bg-gray-50 text-gray-700 px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 border border-gray-300 group"
+            className={`px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 border group ${
+              darkMode ? 'bg-[#242424] hover:bg-[#333333] text-white border-[#333333]' : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'
+            }`}
           >
             <motion.div className="group-hover:scale-110 transition-transform duration-200">
               <FaChartBar />
@@ -192,7 +216,9 @@ export default function AdminDashboard() {
             onClick={refreshData}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-white hover:bg-gray-50 text-gray-700 px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 border border-gray-300 group"
+            className={`px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 border group ${
+              darkMode ? 'bg-[#242424] hover:bg-[#333333] text-white border-[#333333]' : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'
+            }`}
           >
             <motion.div
               className="group-hover:rotate-180 transition-transform duration-300"
@@ -219,8 +245,9 @@ export default function AdminDashboard() {
               setModalMode('edit')
               setShowAddDonorModal(true)
             }}
+            darkMode={darkMode}
           />
-          <RecentActivity recentActivity={recentActivity} />
+          <RecentActivity recentActivity={recentActivity} darkMode={darkMode} />
         </div>
       </main>
 
@@ -231,12 +258,14 @@ export default function AdminDashboard() {
         onDataRefresh={refreshData}
         mode={modalMode}
         donation={currentDonation}
+        darkMode={darkMode}
       />
 
       {/* Access Denied Modal */}
       <AccessDeniedModal
         showAccessDeniedModal={showAccessDeniedModal}
         setShowAccessDeniedModal={setShowAccessDeniedModal}
+        darkMode={darkMode}
       />
     </div>
   )
